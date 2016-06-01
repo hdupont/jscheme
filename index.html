@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <script type='text/javascript' src='js/src/jscheme.js'></script>
+</head>
+<body>
+
+<p>jscheme est le portage en Javascript (<a target="_blank" href="js/jscheme.js">source</a>) de l'interpréteur d'un sous-ensemble de Scheme nommé <q>charme</q> écrit en Python (<a target="_blank" href="py/charme.py">source</a>) par David Evans dans son livre <a target="_blank" href="http://www.computingbook.org/">Introduction to Computing Explorations in Language, Logic, and Machines</a>.</p>
+<p>A votre disposition: <tt>+</tt>, <tt>-</tt>, <tt>*</tt>, <tt>/</tt>, <tt>&lt;</tt>, <tt>define</tt>, <tt>lambda</tt>, <tt>if</tt></p>
+<p>NB. La valeur d'un <tt>define</tt> n'est pas définie.</p>
+
+<p>Pour essayer, copiez une des définitions suivantes dans le champs "Code à exécuter" ci-dessous et cliquez sur Exécuter</p>
+<pre>
+(define factorial
+    (lambda (x)
+        (if (= x 0)
+            1
+            (* x (factorial (- x 1))))))
+
+(factorial 4)
+</pre>
+<p>ou encore en CPS (Continuation-Passing Style)<p>
+<pre>
+(define c-fact (lambda (n continue)
+    (if (= n 1)
+        (continue 1)
+        (c-fact (- n 1)
+            (lambda (fact-n-1)
+                (continue (* n fact-n-1)))))))
+
+(c-fact 4 (lambda (v) v))
+</pre>
+
+<textarea id='input' rows='10' cols='80' placeholder='Code à exécuter'></textarea>
+
+<div id='output'></div>
+
+<div><button id='run_btn'>Exécuter</button></div>
+
+
+<script>
+    document.getElementById('run_btn').addEventListener('click', function(){
+        // On efface les résultats précédents
+        var output_node = document.getElementById('output');
+        output_node.innerHTML = '';
+
+        // On lit le code à interpréter
+        var input = document.getElementById('input').value;
+
+        // On l'interprète
+        var values = jscheme.eval_str(input);
+
+        // On affiche les résultats
+        values.forEach(function(value) {
+            var text = document.createTextNode(value);
+            output_node.appendChild(text);
+            var nl = document.createElement("br");
+            output_node.appendChild(nl);
+        });
+    });
+</script>
+
+</body>
+</html>
